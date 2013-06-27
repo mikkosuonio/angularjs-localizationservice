@@ -11,7 +11,10 @@
 angular.module('localization', [])
     // localization service responsible for retrieving resource files from the server and
     // managing the translation dictionary
-    .factory('localize', ['$http', '$rootScope', '$window', '$filter', function ($http, $rootScope, $window, $filter) {
+    .provider('localize', function () {
+      var resourcePath = '/i18n/';
+
+      var $get = ['$http', '$rootScope', '$window', '$filter', function($http, $rootScope, $window, $filter) {
         var localize = {
             // use the $window service to get the language of the user's browser
             language:$window.navigator.userLanguage || $window.navigator.language,
@@ -39,11 +42,11 @@ angular.module('localization', [])
             // loads the language resource file from the server
             initLocalizedResources:function () {
                 // build the url to retrieve the localized resource file
-                var url = '/i18n/resources-locale_' + localize.language + '.js';
+                var url = resourcePath + 'resources-locale_' + localize.language + '.js';
                 // request the resource file
                 $http({ method:"GET", url:url, cache:false }).success(localize.successCallback).error(function () {
                     // the request failed set the url to the default resource file
-                    var url = '/i18n/resources-locale_default.js';
+                    var url = resourcePath + 'resources-locale_default.js';
                     // request the default resource file
                     $http({ method:"GET", url:url, cache:false }).success(localize.successCallback);
                 });
@@ -51,8 +54,8 @@ angular.module('localization', [])
 
             // checks the dictionary for a localized resource string
             getLocalizedString: function(value) {
-                // default the result to an empty string
-                var result = '';
+                // default the result to element key
+                var result = value;
 
                 // make sure the dictionary has valid data
                 if ((localize.dictionary !== []) && (localize.dictionary.length > 0)) {
@@ -76,7 +79,23 @@ angular.module('localization', [])
 
         // return the local instance when called
         return localize;
-    } ])
+      }];
+
+      // configure the language resource file path on the server
+      // example:
+      // angular.module('localization')
+      //  .config(function(localizeProvider) {
+      //    localizeProvider.setResourcePath('<path>');
+      //  });
+      function setResourcePath(path) {
+        resourcePath = path;
+      }
+
+      return {
+        $get: $get,
+        setResourcePath: setResourcePath
+      };
+    } )
     // simple translation filter
     // usage {{ TOKEN | i18n }}
     .filter('i18n', ['localize', function (localize) {
