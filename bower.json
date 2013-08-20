@@ -1,0 +1,9 @@
+{
+  "name": "angularjs-localizationservice",
+  "version": "0.0.0",
+  "commit": "9807e41f98faf626dc6cce5a7b0f710b52ae95ec",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lavinjj/angularjs-localizationservice.git"
+  }
+}
