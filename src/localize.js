@@ -12,12 +12,13 @@ angular.module('localization', [])
     // localization service responsible for retrieving resource files from the server and
     // managing the translation dictionary
     .provider('localize', function () {
-      var resourcePath = '/i18n/';
+      var resourcePath = '/i18n/',
+        initialLanguage;
 
       var $get = ['$http', '$rootScope', '$window', '$filter', function($http, $rootScope, $window, $filter) {
         var localize = {
             // use the $window service to get the language of the user's browser
-            language:$window.navigator.userLanguage || $window.navigator.language,
+            language: initialLanguage || $window.navigator.userLanguage || $window.navigator.language,
             // array to hold the localized resource string entries
             dictionary:[],
             // flag to indicate if the service hs loaded the resource file
@@ -92,8 +93,19 @@ angular.module('localization', [])
         resourcePath = path;
       }
 
+      // set the language and skip language detection from the browser
+      // example:
+      // angular.module('localization')
+      //  .config(function(localizeProvider) {
+      //    localizeProvider.setLanguage('<language>');
+      //  });
+      function setLanguage(language) {
+        initialLanguage = language;
+      }
+
       return {
         $get: $get,
+        setLanguage: setLanguage,
         setResourcePath: setResourcePath
       };
     } )
