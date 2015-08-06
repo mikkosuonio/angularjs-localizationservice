@@ -112,9 +112,11 @@ angular.module('localization', [])
     // simple translation filter
     // usage {{ TOKEN | i18n }}
     .filter('i18n', ['localize', function (localize) {
-        return function (input) {
-            return localize.getLocalizedString(input);
+        var i18nFilter = function (input) {
+          return localize.getLocalizedString(input);
         };
+        i18nFilter.$stateful = true;
+        return i18nFilter;
     }])
     // translation directive that can handle dynamic strings
     // updates the text value of the attached element
